@@ -7,8 +7,8 @@ import re
 def count_problem_source_code():
     problem_solve_code_list = []
 
-    directory_list = [directory for directory in os.listdir("./") if "SWEA" in directory]
-
+    directory_list = [directory for directory in os.listdir("./") if ("SWEA" or"백준") in directory]
+  
     for directory in directory_list:
         code_list = os.listdir(f"./{directory}")
 
