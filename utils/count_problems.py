@@ -8,7 +8,14 @@ def count_problem_source_code():
     problem_solve_code_list = []
 
     directory_list = [directory for directory in os.listdir("./") if ("SWEA" or"백준") in directory]
+<<<<<<< Updated upstream
 
+=======
+<<<<<<< Updated upstream
+
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     for directory in directory_list:
         code_list = os.listdir(f"./{directory}")
 
