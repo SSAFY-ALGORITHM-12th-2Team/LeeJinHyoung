@@ -31,13 +31,11 @@ public class Main {
 			return;
 		}
 		
-		if(idx + schedule[idx][0] <= N) { // 상담을 끝마칠 수 있다면 -> 상담이 끝난 날짜와 상담비 넣음
+		if(idx + schedule[idx][0] <= N) { 
 			dfs(idx + schedule[idx][0], pay + schedule[idx][1]);
-		} else { // 상담을 끝마칠 수 없다면 -> 상담이 끝난 날짜만 넘겨준다(탈출 조건으로 써먹음)
+		} else {
 			dfs(idx + schedule[idx][0], pay);
 		}
-		
-		// 이어서 상담하지 않고 날짜를 띄워서 새로운 날짜를 입력 (0일부터 마지막 날짜까지 다 훑을 수 있음)
 		dfs(idx + 1, pay);
 	}
 	
