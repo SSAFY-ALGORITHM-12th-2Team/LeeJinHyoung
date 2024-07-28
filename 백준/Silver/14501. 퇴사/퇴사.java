@@ -1,46 +1,44 @@
 import java.util.*;
-import java.util.stream.Stream;
 import java.io.*;
 
-class Day {
-	int pi;
-	int ti;
-}
-
 public class Main {
-	public static void main(String[] args) throws NumberFormatException, IOException {
-		// TODO Auto-generated method stub
+
+	static int N;
+	static int[][] schedule;
+	static int result;
+    
+	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-		int T = Integer.parseInt(br.readLine());
-
-		int[] ti = new int[T];
-		int[] pi = new int[T];
-		for (int i = 0; i < T; i++) {
-			int[] input = Stream.of(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
-			ti[i] = input[0];
-			pi[i] = input[1];
+		
+		N = Integer.parseInt(br.readLine()); // N까지만 일 함
+		schedule = new int[N][2];
+		for(int i=0; i<N; i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+			schedule[i][0] = Integer.parseInt(st.nextToken()); // 상담 하는데 걸리는 일 수
+			schedule[i][1] = Integer.parseInt(st.nextToken()); // 돈
 		}
-
-//		int[][] max = new int[T + 1][T];
-//
-//		for (int s = 0; s < T; s++) {
-//			if (s + days[s].ti <= T) {
-//				max[s][s] = days[s].pi;
-//			}
-//			for (int cur = s; cur < T; cur++) {
-//				if (cur + days[cur].ti < T) {
-//					max[s][cur + days[cur].ti]+=max[s][cur]+days[cur].pi;
-//			}
-//		} //왜 굳이 이중 배열 쓰지..?
-		int[] Start_day = new int[T + 1];
-		for (int i = 0; i < T; i++) {
-			if (i + ti[i] <= T) {
-				Start_day[i + ti[i]] = Math.max(Start_day[i + ti[i]], Start_day[i] + pi[i]);
-			}
-			Start_day[i + 1] = Math.max(Start_day[i + 1], Start_day[i]);
-		}
-		System.out.println(Start_day[T]);
-
+		
+		result = 0;
+		// 0일 부터 시작함
+		dfs(0, 0);
+		
+		System.out.println(result);
 	}
+	
+	static void dfs(int idx, int pay) {
+		if(idx >= N) {
+			result = Math.max(pay, result);
+			return;
+		}
+		
+		if(idx + schedule[idx][0] <= N) { // 상담을 끝마칠 수 있다면 -> 상담이 끝난 날짜와 상담비 넣음
+			dfs(idx + schedule[idx][0], pay + schedule[idx][1]);
+		} else { // 상담을 끝마칠 수 없다면 -> 상담이 끝난 날짜만 넘겨준다(탈출 조건으로 써먹음)
+			dfs(idx + schedule[idx][0], pay);
+		}
+		
+		// 이어서 상담하지 않고 날짜를 띄워서 새로운 날짜를 입력 (0일부터 마지막 날짜까지 다 훑을 수 있음)
+		dfs(idx + 1, pay);
+	}
+	
 }
