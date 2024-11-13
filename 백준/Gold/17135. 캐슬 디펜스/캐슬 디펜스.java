@@ -1,24 +1,13 @@
 import java.util.*;
 import java.util.stream.Stream;
+import java.awt.Point;
 import java.io.*;
 
-class pos {
-	int r;
-	int c;
-
-	public pos(int r, int c) {
-		super();
-		this.r = r;
-		this.c = c;
-	}
-}
-
 public class Main {
-	private static int N, M, D;
-	private static int castle[][];
-	static ArrayList<pos> enemy = new ArrayList<>();
+	static int N, M, D;
+	static int[][] map;
 
-	static int max = Integer.MIN_VALUE;
+	static int max;
 
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
@@ -30,128 +19,132 @@ public class Main {
 		M = input[1];
 		D = input[2];
 
-		castle = new int[N + 1][M];
+		// 전략: 궁수들의 자리 배치가 달라질 수 있다.
+		// 이 자리 배치에 따라서 효율적으로 잡을 수 있는 적의 위치가 달라질 수 있고
+		// 열의 개수 에서 3개만 선택하자
+		// 전투 시작하면서 행 하나씩 내리자
+		map = new int[N + 1][M];
 
 		for (int i = 0; i < N; i++) {
-			castle[i] = Stream.of(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
-			for (int j = 0; j < M; j++) {
-				if (castle[i][j] == 1) {
-					enemy.add(new pos(i, j));
-				}
-			}
-		} // 입력 끝
+			map[i] = Stream.of(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
 
-		// 1. 궁수들을 배치할 수 있는 방법을 조합으로 뽑아내자
+		}
+		max = Integer.MIN_VALUE;
 		combi(new int[3], new boolean[M], 0, 0);
-
 		System.out.println(max);
 	}
 
-	private static void combi(int[] arr, boolean[] vis, int cnt, int start) {
-		// TODO Auto-generated method stub
-		if (cnt == 3) {
-			/* 이 부분이 자료 복사하기 */
-			int[][] copyCastle = new int[N + 1][M];
-			ArrayList<pos> copyEnemy = new ArrayList<>();
-			for (pos e : enemy) {
-				copyEnemy.add(e);
-			}
-			for (int i = 0; i < copyCastle.length; i++) {
-				for (int j = 0; j < copyCastle[i].length; j++) {
-					copyCastle[i][j] = castle[i][j];
-				}
-			}
-			/* 자료 복사하기 */
-			for (int e : arr) {
-				copyCastle[N][e] = 2;
-			} // 궁수의 위치를 2로 표현
-				// 이제 턴을 진행해야 한다
-			int kill = 0;
-			while (remainEnemy(copyCastle)) {// 적이 남아있을 때는
-				// D 이하의 적을 제거가능한지 확인후 죽일 때는 한번에 죽인다
-				// 하나씩 죽이면 오류남
-
-				// 적은 가장 가까운 적을 죽이고 가장 가까운 적이 여럿이라면 왼쪽이다
-				pos[] target = new pos[3];
-				int idx = 0;
-				for (int i = 0; i < M; i++) {
-					if (copyCastle[N][i] == 2) {// 궁수라면
-						int enemyDist = Integer.MAX_VALUE;
-						for (int j = 0; j < copyEnemy.size(); j++) {
-							int dist = dist(new pos(N, i), copyEnemy.get(j));
-							if (D >= dist && enemyDist >= dist) {
-								if (enemyDist == dist) {// 만약 기존 적과 거리가 같다면 더왼쪽 것을 선택
-									target[idx] = target[idx].c < copyEnemy.get(j).c ? target[idx] : copyEnemy.get(j);
-								} else {
-									enemyDist = dist(new pos(N, i), copyEnemy.get(j));
-									target[idx] = copyEnemy.get(j);
-								}
-							}
-						}
-						idx++;
-					}
-				}
-				for (int i = 0; i < 3; i++) {
-					if (target[i] == null)
-						continue;
-					if (copyCastle[target[i].r][target[i].c] == 1) {
-						kill++;
-						copyCastle[target[i].r][target[i].c] = 0;
-					}
-				}
-
-				for (int i = N - 1; i > 0; i--) {
-					for (int j = 0; j < M; j++) {
-						copyCastle[i][j] = copyCastle[i - 1][j];
-					}
-				}
+	private static void combi(int[] sel, boolean[] vis, int idx, int start) {
+		if (idx == sel.length) {
+			// 여기까지 해서 궁수가 배치될 수 있는 경우의 수를 구할 수 있다.
+			// 그렇다면 이제 지도를 움직여서 시뮬레이션을 해야한다
+			int[][] copyMap = new int[N + 1][M];
+			for (int i = 0; i < N; i++) {
 				for (int j = 0; j < M; j++) {
-					copyCastle[0][j] = 0;
+					copyMap[i][j] = map[i][j];
 				}
-				copyEnemy.clear();
-				for (int i = 0; i < N; i++) {
-					for (int j = 0; j < M; j++) {
-						if (copyCastle[i][j] == 1) {
-							copyEnemy.add(new pos(i, j));
-						}
+			} // 지도 복사본을 하나 만든다
 
-					}
-				}
+			Point[] archor = new Point[3];
+			for (int i = 0; i < 3; i++) {
+				archor[i] = new Point(N, sel[i]);
+				copyMap[N][sel[i]] = 2;
+			} // 궁수를 배치한다.
 
-//				for (int i = 0; i <= N; i++) {
-//					for (int j = 0; j < M; j++) {
-//						System.out.print(copyCastle[i][j]);
-//					}
-//					System.out.println();
-//				}
-//				System.out.println(kill);
-			}
-
+			// 궁수 배치가 끝난다면 문제 설명에 따라서 궁수 공격을 하고 적을 이동 시킨다.
+			int kill = game(copyMap, archor);
 			max = Math.max(kill, max);
+
+//			for (int i = 0; i < N; i++) {
+//				for (int j = 0; j < M; j++) {
+//					System.out.print(copyMap[i][j]);
+//				}
+//				System.out.println();
+//			}
+//			for (Point p : archor) {
+//				System.out.println(p.x + " " + p.y);
+//			}
 			return;
 		}
-		for (int i = start; i < M; i++) {
-			if (vis[i] == false) {
+		for (int i = start; i < vis.length; i++) {
+			if (!vis[i]) {
 				vis[i] = true;
-				arr[cnt] = i;
-				combi(arr, vis, cnt + 1, i + 1);
+				sel[idx] = i;
+				combi(sel, vis, idx + 1, i + 1);
 				vis[i] = false;
 			}
 		}
 	}
 
-	private static int dist(pos archor, pos enemy) {
-		return Math.abs(archor.r - enemy.r) + Math.abs(archor.c - enemy.c);
+	public static int game(int[][] copyMap, Point[] archor) {
+		int kill = 0;
+		while (!end(copyMap)) {
+//			for (int i = 0; i < copyMap.length; i++) {
+//				for (int j = 0; j < copyMap[i].length; j++) {
+//					System.out.print(copyMap[i][j]);
+//				}
+//				System.out.println();
+//			}
+
+			List<Point> enemy = new ArrayList();
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < M; j++) {
+					if (copyMap[i][j] == 1)
+						enemy.add(new Point(i, j));
+				}
+			} // enemyList 완성
+			boolean[] killList = new boolean[enemy.size()];
+			for (int i = 0; i < archor.length; i++) {
+				int idx = Integer.MAX_VALUE;
+				int dist = Integer.MAX_VALUE;
+				for (int j = 0; j < enemy.size(); j++) {
+					int entryDist = Math.abs(archor[i].x - enemy.get(j).x) + Math.abs(archor[i].y - enemy.get(j).y);
+					if (entryDist <= D && entryDist < dist) {
+
+						idx = j;
+						dist = Math.abs(archor[i].x - enemy.get(j).x) + Math.abs(archor[i].y - enemy.get(j).y);
+					} else if (entryDist <= D && entryDist == dist) {
+						if (enemy.get(j).y < enemy.get(idx).y) {
+							idx = j;
+						}
+					}
+				}
+				if (idx < enemy.size())
+					killList[idx] = true;
+			}
+			for (int i = 0; i < killList.length; i++) {
+				if (killList[i]) {
+					kill++;
+					copyMap[enemy.get(i).x][enemy.get(i).y] = 0;
+				}
+			}
+			
+			copyMap = move(copyMap);
+
+		}
+		return kill;
 	}
 
-	private static boolean remainEnemy(int[][] copyCastle) {
+	private static boolean end(int[][] copyMap) {
 		// TODO Auto-generated method stub
-		for (int i = 0; i <= N; i++) {
+		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < M; j++) {
-				if (copyCastle[i][j] == 1)
-					return true;
+				if (copyMap[i][j] == 1) {
+					return false;
+				}
 			}
 		}
-		return false;
+		return true;
+	}
+
+	private static int[][] move(int[][] copyMap) {
+		// TODO Auto-generated method stub
+		for (int c = 0; c < M; c++) {
+			for (int r = N - 1; r > 0; r--) {
+				copyMap[r][c] = copyMap[r - 1][c];
+			}
+			copyMap[0][c] = 0;
+		}
+		return copyMap;
 	}
 }
