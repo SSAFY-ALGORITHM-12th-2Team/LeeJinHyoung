@@ -9,8 +9,9 @@ public class Main {
 
 		protected Node(int dest, int weight) {
 			super();
-			this.weight = weight;
 			this.dest = dest;
+			this.weight = weight;
+
 		}
 
 		@Override
@@ -18,11 +19,10 @@ public class Main {
 			// TODO Auto-generated method stub
 			return this.weight - o.weight;
 		}
-
 	}
 
-	static int V, E;
-	static List<Node>[] adjList;
+	static int V, E, K;
+	static ArrayList<Node>[] adjList;
 
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
@@ -32,43 +32,55 @@ public class Main {
 		V = input[0];
 		E = input[1];
 
+		K = Integer.parseInt(br.readLine());
+
 		adjList = new ArrayList[V + 1];
 		for (int i = 0; i <= V; i++) {
-			adjList[i] = new ArrayList();
+			adjList[i] = new ArrayList<>();
 		}
 
 		for (int i = 0; i < E; i++) {
 			int[] Edge = Stream.of(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
 			adjList[Edge[0]].add(new Node(Edge[1], Edge[2]));
-			adjList[Edge[1]].add(new Node(Edge[0], Edge[2]));
 		}
-		
-		System.out.println(prim());
+		int[] dist = dijkstra();
+		for (int i = 1; i < dist.length; i++) {
+			if (dist[i] == Integer.MAX_VALUE) {
+				System.out.println("INF");
+			} else
+				System.out.println(dist[i]);
+		}
 	}
 
-	private static int prim() {
+	private static int[] dijkstra() {
+		// TODO Auto-generated method stub
 		PriorityQueue<Node> pq = new PriorityQueue<>();
-		boolean[] vis = new boolean[V + 1];
-
-		pq.offer(new Node(1, 0));
-
-		int totalWeight = 0;
-		int idx = 0;
+		pq.offer(new Node(K, 0));
+		int[] dist = new int[V + 1];
+		Arrays.fill(dist, Integer.MAX_VALUE);
+		dist[K] = 0;
 		while (!pq.isEmpty()) {
 			Node cur = pq.poll();
-			if (vis[cur.dest])
+
+			int weight = cur.weight;
+			int dest = cur.dest;
+
+			if (dist[cur.dest] < weight) {
 				continue;
+			}
 
-			vis[cur.dest] = true;
-			totalWeight += cur.weight;
+			for (Node node : adjList[dest]) {
+				int nextVertex = node.dest;
+				int nextweight = node.weight;
+				int nextDist = node.weight + cur.weight;
 
-			for (Node node : adjList[cur.dest]) {
-				if (!vis[node.dest]) {
-					pq.offer(node);
+				if (nextDist < dist[node.dest]) {
+					dist[node.dest] = nextDist;
+					pq.offer(new Node(nextVertex, nextDist));
 				}
 			}
-			idx++;
 		}
-		return totalWeight;
+		return dist;
 	}
+
 }
