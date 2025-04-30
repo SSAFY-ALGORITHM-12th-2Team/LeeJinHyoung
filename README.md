@@ -20,3 +20,15 @@ SSAFY 12기 대전 5반 스터디 2팀 이진형
 > 2. 정사각형방
 > 3. 치즈도둑
 > 4. 미로탐색
+
+<!---LeetCode Topics Start-->
+# LeetCode Topics
+## Array
+|  |
+| ------- |
+| [1421-find-numbers-with-even-number-of-digits](https://github.com/Jinnyzinny/LeeJinHyoung/tree/master/1421-find-numbers-with-even-number-of-digits) |
+## Math
+|  |
+| ------- |
+| [1421-find-numbers-with-even-number-of-digits](https://github.com/Jinnyzinny/LeeJinHyoung/tree/master/1421-find-numbers-with-even-number-of-digits) |
+<!---LeetCode Topics End-->
