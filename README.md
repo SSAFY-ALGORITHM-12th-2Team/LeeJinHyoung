@@ -1,5 +1,3 @@
-
-<<<<<<< main
 # 목표는 B형까지
 # SSAFY 온 김에 B형 따야지...?
 
@@ -43,5 +41,3 @@
 | ------- |
 | [3447-clear-digits](https://github.com/Jinnyzinny/LeeJinHyoung/tree/master/3447-clear-digits) |
 <!---LeetCode Topics End-->
-=======
->>>>>>> main
