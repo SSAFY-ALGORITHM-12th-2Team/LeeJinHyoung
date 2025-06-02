@@ -1,0 +1,6 @@
+-- 코드를 작성해주세요
+SELECT E.DEPT_ID,D.DEPT_NAME_EN,ROUND(AVG(E.SAL)) as AVG_SAL
+from HR_DEPARTMENT D inner join HR_EMPLOYEES E
+using (DEPT_ID)
+GROUP BY D.DEPT_ID
+order by AVG_SAL DESC;
