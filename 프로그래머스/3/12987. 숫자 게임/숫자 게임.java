@@ -16,10 +16,8 @@ class Solution {
         int bTail=sortedB.length-1;
         
         for(int i=sortedA.length-1;i>=0;i--){
-            if(sortedA[i]>sortedB[bTail]){
+            if(sortedA[i]>=sortedB[bTail]){
                 used[bHead++]=true;
-            } else if(sortedA[i]==sortedB[bTail]){
-                used[bTail]=true;
             } else if(sortedA[i]<sortedB[bTail]){
                 used[bTail--]=true;
                 answer++;
