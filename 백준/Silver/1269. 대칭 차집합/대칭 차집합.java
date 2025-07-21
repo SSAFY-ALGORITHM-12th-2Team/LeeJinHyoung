@@ -28,17 +28,6 @@ public class Main {
 				a++;
 			}
 		}
-		Set<Integer> answer = new HashSet<>();
-		for (int i = 0; i < A.length; i++) {
-			if (intersect.contains(A[i]))
-				continue;
-			answer.add(A[i]);
-		}
-		for (int i = 0; i < B.length; i++) {
-			if (intersect.contains(B[i]))
-				continue;
-			answer.add(B[i]);
-		}
-		System.out.println(answer.size());
+		System.out.println(A.length - intersect.size() + B.length - intersect.size());
 	}
 }
