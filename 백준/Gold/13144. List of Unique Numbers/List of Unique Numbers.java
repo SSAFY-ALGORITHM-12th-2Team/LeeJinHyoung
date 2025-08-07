@@ -17,13 +17,11 @@ public class Main {
 		Set<Integer> set = new HashSet<>();
 		while (right < N) {
 //			System.out.println(left + " " + right);
-//			만약 left와 right가 같거나
-//			left,right 값이 같지 않고 right가 set에 포함되지 않는다면
-			if (!set.contains(array[right])) {
+			if (left == right) {
 				set.add(array[right++]);
-			}
-//			left,right 값이 같지 않고 right가 set에 포함됐다면
-			else if (set.contains(array[right])) {
+			} else if (right < N && !set.contains(array[right])) {
+				set.add(array[right++]);
+			} else if (right < N && set.contains(array[right])) {
 				set.remove(array[left++]);
 				continue;
 			}
