@@ -14,7 +14,7 @@ class Solution {
         for(int i=n;i>0;i--){
             int div=total/i;
             total-=div;
-            answer[-(i-n)]=div;;
+            answer[n-i]=div;;
         }
         return answer;
     }
